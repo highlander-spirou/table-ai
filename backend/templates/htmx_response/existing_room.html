@@ -1,5 +1,7 @@
 {% if props['status'] %}
-<p class="link link-success no-underline cursor-text">{{ props['message'] }}</p>
+<p class="link link-success no-underline cursor-text" id="room-name-response" status="{{ props['status'] }}">{{
+    props['message'] }}</p>
 {% else %}
-<p class="link link-error no-underline cursor-text">{{ props['message'] }}</p>
+<p class="link link-error no-underline cursor-text" id="room-name-response" status="{{ props['status'] }}">{{
+    props['message'] }}</p>
 {% endif %}

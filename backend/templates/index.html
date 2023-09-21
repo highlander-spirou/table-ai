@@ -1,11 +1,15 @@
 {% extends 'layout.html' %} {% block body %}
-<div x-data>
+<div x-data="{room_input: ''}" x-init="$watch('room_input', value => handleInputDebounce())">
   <form action="/" method="POST" class="mx-auto max-w-[475px] mt-10 border-2 rounded-2xl py-5">
     {{ form.hidden_tag() }}
 
-    {{ form.files(class="hidden", **{"x-ref": "upload_btn" })}}
+    {{ form.files(class="", **{"x-ref": "upload_btn", "@change": "handleUpload"})}}
+    {{ form.room_name(class="input input-bordered", **{"x-model": "room_input", 'hx-get':"/existing_room",
+    'hx-target': "#response", 'hx-trigger': "keyup changed delay:500ms"}) }}
+    {{form.submit(class="btn", **{":class": "$store.states.disable && 'hidden'"})}}
+    <!-- {{ form.files(class="hidden", **{"x-ref": "upload_btn" })}}
     {{form.room_name(class="hidden input input-bordered")}}
-    {{form.submit(class="btn hidden")}}
+    {{form.submit(class="btn hidden")}} -->
     <div class="mx-auto flex flex-col justify-center items-center" id="trigger-upload">
       <p>
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.2" stroke="currentColor"
@@ -18,7 +22,7 @@
         Click to upload
       </a>
     </div>
-    <div id="haha"></div>
+    <div id="response"></div>
   </form>
 
   <div class="ml-5 mt-5">
@@ -26,7 +30,79 @@
   </div>
 </div>
 
-<script type="module">
+<script>
+  const convertFileSize = (fileSize) => {
+    return fileSize / (1024 * 1024) < 0.2 ? `${Math.round(fileSize / (1024))} KB` : `${Math.round(fileSize / (1024 * 1024))} MB`
+  }
+
+  const getFileExtension = (filename) => {
+    // get file extension
+    const extension = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+    return extension;
+  }
+
+  let Alpine
+  let states
+  document.addEventListener('alpine:init', () => {
+    Alpine = window.Alpine
+    Alpine.store('states', {
+      files: [],
+      room_valid: false,
+      disable: true,
+      addFile(newFile) {
+        this.files = [...this.files, newFile]
+      },
+      changeRoomValid(state) {
+        this.room_valid = state
+      },
+      evaluateFiles() {
+        console.log('before', this.disable)
+        console.log('file not none', !this.files.map(x => x.valid).every(x => x))
+        console.log('room not none', this.room_valid)
+        this.disable = !(this.files.map(x => x.valid).every(x => x) && this.room_valid)
+        console.log('after', this.disable)
+      },
+
+    })
+    states = Alpine.store('states')
+  })
+  const handleUpload = (e) => {
+    const uploadFiles = Array.from(e.target.files)
+    uploadFiles.forEach(element => {
+      if (element.size > 5 * (10 ** 8)) {
+        states.addFile({ name: element.name, size: '> 500MB', ext: getFileExtension(element.name), valid: false })
+      } else {
+        states.addFile({ name: element.name, size: convertFileSize(element.size), ext: getFileExtension(element.name), valid: true })
+      }
+    });
+    states.evaluateFiles()
+  }
+
+  const debounce = (func, timeout = 1000) => {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+  }
+
+  const handleInput = () => {
+    const status = document.getElementById('room-name-response')
+    if (status && status?.getAttribute('status') === 'True') {
+      states.changeRoomValid(true)
+    } else {
+      states.changeRoomValid(false)
+    }
+    states.evaluateFiles()
+  }
+
+  const handleInputDebounce = debounce(handleInput)
+
+</script>
+
+
+
+<!-- <script type="module">
 
   const convertFileSize = (fileSize) => {
     return fileSize / (1024 * 1024) < 0.2 ? `${Math.round(fileSize / (1024))} KB` : `${Math.round(fileSize / (1024 * 1024))} MB`
@@ -87,5 +163,5 @@
   })
 
 
-</script>
+</script> -->
 {% endblock %}
