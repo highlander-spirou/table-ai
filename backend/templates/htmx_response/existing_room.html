@@ -1,0 +1,5 @@
+{% if props['status'] %}
+<p class="link link-success no-underline cursor-text">{{ props['message'] }}</p>
+{% else %}
+<p class="link link-error no-underline cursor-text">{{ props['message'] }}</p>
+{% endif %}

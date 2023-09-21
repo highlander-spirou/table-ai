@@ -1,0 +1,17 @@
+{% macro upload_item(type) -%}
+<div class="flex flex-col items-center justify-center w-24">
+  <div class="avatar">
+    <div class="w-20 rounded">
+      {% if type == 'csv' %}
+      <img src="/static/imgs/csv.png" class="w-full" />
+      {% else %}
+      <img src="/static/imgs/xlsx.png" class="w-full" />
+      {% endif %}
+    </div>
+  </div>
+  <div
+    class="font-semibold text-sm whitespace-nowrap text-ellipsis w-[96px] overflow-hidden"
+    x-text="files[index].name"
+  ></div>
+</div>
+{%- endmacro %}

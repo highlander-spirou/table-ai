@@ -1,0 +1,47 @@
+{% extends 'layout.html' %} {% block body %}
+
+{% import 'components/upload_item.html' as upload_item %}
+
+<p>hello world</p>
+<form action="/upload" method="post" enctype="multipart/form-data" class="mx-auto max-w-[475px] mt-10">
+  {{ form.hidden_tag() }}
+  <div x-data="{files: null}" id="upload-file" name="alpine-context" class="border-2 rounded-2xl py-5 h-full">
+    {{ form.files() }}
+
+    <template x-if="files !== null">
+      <div>
+        <div class="flex flex-col justify-center items-center">
+          <div class="h-52 overflow-scroll grid grid-cols-3 no-scrollbar w-full place-items-center">
+            <template x-for="(_,index) in Array.from({ length: files.length })">
+              <div>
+                <template x-if="files[index].type.includes('text/csv')">
+                  {{ upload_item.upload_item('csv') }}
+                </template>
+                <template x-if="files[index].type.includes('sheet')">
+                  {{ upload_item.upload_item('xlsx') }}
+                </template>
+              </div>
+            </template>
+          </div>
+          {{ form.room_name(class="input input-bordered w-[250px]",**{'hx-get': "/sad", 'hx-target': "#response",
+          'hx-trigger': "keyup changed delay:500ms"})}}
+          <div id="response"></div>
+          {{form.submit(class="btn btn-primary w-[150px] mt-3") }}
+
+        </div>
+      </div>
+    </template>
+    <template x-if="files === null">
+      <div class="mx-auto flex flex-col justify-center items-center">
+        <p class="text-gray-700">Drag your files here or click in this area.</p>
+        <a class="btn btn-outline btn-primary mt-5" @click="$refs.upload_btn.click()">
+          Click to upload
+        </a>
+      </div>
+    </template>
+
+  </div>
+</form>
+<div id="response"></div>
+
+{% endblock %}
