@@ -32,7 +32,9 @@ def check_existing_room():
                 'status': True, 'message': 'Room name valid'}
         return render_view('htmx_response/existing_room.html', props=props)
     else:
-        return '<p></p>'
+        props: ExistingRoomInterface = {
+            'status': False, 'message': 'Room name is empty'}
+        return render_view('htmx_response/existing_room.html', props=props)
 # @htmx_routes.route('/a/<int:button_id>')
 # def confirm_btn_click(button_id:int):
 #     btn_clicked = filter_dict_list(li, 'id', button_id)

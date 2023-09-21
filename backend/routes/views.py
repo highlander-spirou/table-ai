@@ -2,66 +2,15 @@
 This module contains controllers for normal HTML views
 """
 
-from typing import Any
-from flask import Blueprint, request, redirect, flash
+from flask import Blueprint, request, redirect
 import pandas as pd
 from interfaces import *
-from utils import render_view, ensure_path_exist
-from store import room_name
-
-from wtforms import MultipleFileField, StringField, SubmitField
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileRequired, FileAllowed
-from wtforms.validators import DataRequired
-
-from flask_wtf.file import FileAllowed
-from markupsafe import Markup
-from werkzeug.datastructures import FileStorage
-from wtforms.fields import MultipleFileField, SubmitField
-from wtforms.validators import InputRequired, StopValidation
-from pathlib import Path
+from utils import render_view
+from forms import UploadForm
 
 normal_routes = Blueprint('normal_routes', __name__,
                           template_folder='templates')
 
-
-class MultiFileAllowed(object):
-    def __init__(self, upload_set, message=None):
-        self.upload_set = upload_set
-        self.message = message
-
-    def __get_file_ext(self, file_name):
-        return Path(file_name).suffix
-
-    def __call__(self, form, field):
-        all_file_valid = all([self.__get_file_ext(
-            i) in self.upload_set for i in field.data])
-        if all_file_valid:
-            return
-        else:
-            raise StopValidation('File type not match')
-
-
-class CheckRoomIdExisted(object):
-    def __init__(self, message=None):
-        self.message = message
-
-    def __check_room_exist(self, room_to_check):
-        return room_to_check in room_name
-
-    def __call__(self, form, field):
-        if self.__check_room_exist(field.data):
-            raise StopValidation('Duplicated room name')
-        else:
-            return
-
-
-class UploadForm(FlaskForm):
-    files = MultipleFileField('files', validators=[InputRequired(), MultiFileAllowed(['.csv', '.xlsx'])], render_kw={
-                              "accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"})
-    room_name = StringField('Room name', validators=[
-                            DataRequired(), CheckRoomIdExisted()])
-    submit = SubmitField('Submit')
 
 
 @normal_routes.route('/', methods=['GET', 'POST'])
