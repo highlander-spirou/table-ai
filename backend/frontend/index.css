@@ -1,11 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.success-message {
-    @apply link link-success no-underline;
-}
-
-.fail-message {
-    @apply link link-error no-underline;
-}

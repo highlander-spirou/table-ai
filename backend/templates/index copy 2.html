@@ -1,12 +1,15 @@
 {% extends 'layout.html' %} {% block body %}
+
+{% import 'components/upload_item.html' as upload_item %}
+
 <div x-data="{room_input: ''}" x-init="$watch('room_input', value => handleInputDebounce())">
   <form action="/" method="POST" class="mx-auto max-w-[475px] mt-10 border-2 rounded-2xl py-5">
     {{ form.hidden_tag() }}
 
     {{ form.files(class="", **{"x-ref": "upload_btn", "@change": "handleUpload"})}}
     {{ form.room_name(class="input input-bordered", **{"x-model": "room_input", 'hx-get':"/existing_room",
-    'hx-target': "#response", 'hx-trigger': "keyup changed delay:500ms"}) }}
-    {{form.submit(class="btn", **{":class": "$store.states.disable && 'hidden'"})}}
+    'hx-target': "#response", 'hx-trigger': "keyup changed delay:500ms", ":class": "$store.states.files.length > 0 && 'hidden'"}) }}
+    {{form.submit(class="btn", **{":class": "$store.states.files && 'hidden'"})}}
     <!-- {{ form.files(class="hidden", **{"x-ref": "upload_btn" })}}
     {{form.room_name(class="hidden input input-bordered")}}
     {{form.submit(class="btn hidden")}} -->
@@ -56,11 +59,7 @@
         this.room_valid = state
       },
       evaluateFiles() {
-        console.log('before', this.disable)
-        console.log('file not none', !this.files.map(x => x.valid).every(x => x))
-        console.log('room not none', this.room_valid)
         this.disable = !(this.files.map(x => x.valid).every(x => x) && this.room_valid)
-        console.log('after', this.disable)
       },
 
     })
