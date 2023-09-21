@@ -3,8 +3,8 @@
 {% if messages %}
 <ul class="flex justify-end mt-5 mr-5">
     {% for message in messages %}
-    <div x-data="{ open: true }" x-init="setTimeout(() => open = false, 5000)">
-        <li class="alert alert-error w-96" x-show="open" x-transition>
+    <div>
+        <li class="alert alert-error w-96">
             <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none"
                 viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -12,12 +12,17 @@
             </svg>
             <span>{{ message }}</span>
             <div>
-                <span class="btn btn-sm btn-ghost" @click="open = ! open">Close</span>
+                <span class="btn btn-sm btn-ghost" id="close-flash-message">Close</span>
             </div>
         </li>
     </div>
     {% endfor %}
 </ul>
+<script>
+    document.getElementById('close-flash-message').addEventListener('click', () => {
+        document.getElementById('flash-wrapper').innerHTML = ""
+    })
+</script>
 {% endif %}
 {% endwith %}
 {%- endmacro %}

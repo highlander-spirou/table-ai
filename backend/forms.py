@@ -32,11 +32,11 @@ class CheckRoomIdExisted(object):
         if self.__check_room_exist(field.data):
             raise StopValidation('Duplicated room name')
         else:
-            return
+            return form
 
 
 class UploadForm(FlaskForm):
-    files = MultipleFileField('files', validators=[InputRequired(), MultiFileAllowed(['.csv', '.xlsx'])], render_kw={
+    files = MultipleFileField('files', validators=[InputRequired()], render_kw={
                               "accept": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, text/csv"})
     room_name = StringField('Room name', validators=[
                             InputRequired(), CheckRoomIdExisted()], render_kw={"placeholder": "Enter room name"})

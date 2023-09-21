@@ -5,6 +5,7 @@ from flask import render_template
 from interfaces import ViewBaseInterface, HTMXBaseInterface
 from typing import Optional, Union
 from os import makedirs, path
+from pathlib import Path
 
 def render_view(view_path, props: Optional[Union[ViewBaseInterface, HTMXBaseInterface]] = None, *args, **kwargs):
     """
@@ -19,7 +20,8 @@ def ensure_path_exist(path_name):
     if not path.exists(path_name):
         makedirs(path_name)
 
-
+def get_filename(s):
+    return Path(s).stem
 
 
 
