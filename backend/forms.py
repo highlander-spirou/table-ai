@@ -1,7 +1,7 @@
 from pathlib import Path
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, MultipleFileField, SubmitField, PasswordField
-from wtforms.validators import InputRequired, StopValidation
+from wtforms.validators import InputRequired, StopValidation, EqualTo
 from models import RoomUtils, UserUtils
 
 class MultiFileAllowed(object):
@@ -59,4 +59,13 @@ class UploadForm(FlaskForm):
 class SignUpForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), CheckUsernameExisted()], render_kw={"placeholder": "Enter username"})
     password = PasswordField('Password', validators=[InputRequired()], render_kw={"placeholder": "Enter password"})
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('password')], render_kw={"placeholder": "Confirm password"})
     submit = SubmitField('Submit')
+
+
+
+class SignInForm(FlaskForm):
+    login_username = StringField('Username', validators=[InputRequired()], render_kw={"placeholder": "Enter username"})
+    password = PasswordField('Password', validators=[InputRequired()], render_kw={"placeholder": "Enter password"})
+    submit = SubmitField('Submit')
+    

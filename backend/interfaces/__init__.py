@@ -29,3 +29,8 @@ class TableInterface(HTMXBaseInterface):
     table_name: str
     room_name: str
     alias: Optional[str]
+
+
+class ExistingUsernameInterface(HTMXBaseInterface):
+    status: bool
+    message: str

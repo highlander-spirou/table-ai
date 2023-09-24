@@ -2,12 +2,13 @@
 This module contains controllers for normal HTML views
 """
 
-from flask import Blueprint, request, redirect, flash, abort
+from flask import Blueprint, request, redirect, flash, abort, url_for
 import pandas as pd
 from interfaces import *
 from utils import render_view, get_filename
-from forms import UploadForm, SignUpForm
+from forms import UploadForm, SignUpForm, SignInForm
 from models import RoomUtils, DataframeUtils, UserUtils
+from flask_login import login_user, login_required, logout_user, current_user
 
 normal_routes = Blueprint('normal_routes', __name__,
                           template_folder='templates')
@@ -38,6 +39,7 @@ def index():
     return render_view('index.html', form=form)
 
 @normal_routes.route('/dashboard')
+@login_required
 def dashboard():
     
     return render_view('sth.html')
@@ -48,13 +50,35 @@ def signup():
     if request.method == 'POST':
         if form.validate_on_submit():
             UserUtils.create_user(request.form.get('username'), request.form.get('password'))
-            return redirect('/dashboard')
+            return redirect('/login')
         else:
             flash('Submit error')
             return redirect('/signup')
 
     return render_view('signup.html', form=form)
 
+
+@normal_routes.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect('/dashboard')
+    form = SignInForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = UserUtils.login_user(form.login_username.data, form.password.data)
+            login_user(user)
+            
+            # Redirect to protected route
+            next = request.args.get('next')
+            if next == None or not next[0]=='/': 
+                next = url_for('normal_routes.dashboard') # Default navigate to dashboard on `user_authenticated`
+
+            return redirect(next)
+        else:
+            flash('Submit error')
+            return redirect('/login')
+
+    return render_view('login.html', form=form)
 
 
 # @normal_routes.route('/dashboard')

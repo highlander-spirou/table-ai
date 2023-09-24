@@ -4,6 +4,8 @@ from sqlalchemy import event, and_, Integer, String
 from utils import ensure_path_exist
 from typing import Optional, List
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
+
 
 class Base(DeclarativeBase):
     pass
@@ -11,7 +13,7 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     password: Mapped[str] = mapped_column(String, nullable=False)
@@ -54,6 +56,16 @@ class UserUtils:
         new_user = User(username=username, password=generate_password_hash(password))
         db.session.add(new_user)
         db.session.commit()
+
+    @staticmethod
+    def login_user(username, password):
+        user:User = User.query.filter(User.username == username).one_or_none()
+
+        if user is not None and check_password_hash(user.password, password):
+            return user
+        else:
+            raise Exception
+            
 
 
 class RoomUtils:

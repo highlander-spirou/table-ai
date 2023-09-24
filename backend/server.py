@@ -1,14 +1,24 @@
 from flask import Flask, render_template
 import json
 from config import Config
-from models import db
+from models import db, User
 from routes import htmx_routes, normal_routes
+from flask_login import LoginManager
 
 app = Flask(__name__, static_url_path='/static')
 
 app.config.from_object(Config)
 
 db.init_app(app)
+login_manager = LoginManager(app)
+login_manager.login_view = 'normal_routes.login'
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
+
+
 with app.app_context():
     db.create_all()
 

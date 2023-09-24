@@ -4,7 +4,6 @@ version = "0.1.0"
 description = ""
 authors = ["shyn_le <highlandetspirou2812@gmail.com>"]
 readme = "README.md"
-packages = [{include = "backend"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -16,6 +15,7 @@ openpyxl = "^3.1.2"
 flask-wtf = "^1.1.1"
 fastparquet = "^2023.8.0"
 flask-sqlalchemy = "^3.1.1"
+flask-login = "^0.6.2"
 
 
 [build-system]

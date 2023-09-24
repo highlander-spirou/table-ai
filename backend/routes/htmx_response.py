@@ -6,7 +6,7 @@ from flask_htmx import HTMX
 from utils import render_view
 from interfaces import *
 import pandas as pd
-from models import RoomUtils, DataframeUtils
+from models import RoomUtils, DataframeUtils, UserUtils
 
 htmx_routes = Blueprint('htmx_routes', __name__,
                         template_folder='templates/htmx_response')
@@ -59,12 +59,24 @@ def get_table():
 
 
 @htmx_routes.route('/change-alias', methods=['POST'])
-def haha():
+def change_alias():
     new_alias, room_name, table_name = [request.form.get(
         i) for i in ('change_alias', 'room_name', 'table_name')]
     DataframeUtils.update_alias(room_name, table_name, new_alias)
     return f'<p>Alias: {new_alias}</p>'
 
+
+@htmx_routes.route('/existing_username')
+def check_existing_username():
+    username = request.args.get('username')
+    if username:
+        if UserUtils.find_user(username) is not None:
+            props: ExistingUsernameInterface = {'status': False, 'message': 'Username existed'}
+        else:
+            props: ExistingUsernameInterface = {'status': True, 'message': 'Username valid'}
+    else:
+        props: ExistingUsernameInterface = {'status': False, 'message': 'Username empty'}
+    return render_view('htmx_response/existing_username.html', props=props)
 
 # @htmx_routes.route('/a/<int:button_id>')
 # def confirm_btn_click(button_id:int):
