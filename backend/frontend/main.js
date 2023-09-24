@@ -1,5 +1,15 @@
-let files = [];
-let room_valid = false;
+let isUpload = false
+let validFiles = []
+let invalidFiles = []
+let duplicated = null
+
+function containsDuplicates(array) {
+    if (array.length !== new Set(array).size) {
+        return true;
+    }
+
+    return false;
+}
 
 const convertFileSize = (fileSize) => {
     return fileSize / (1024 * 1024) < 0.2
@@ -15,52 +25,44 @@ const getFileExtension = (filename) => {
     return extension;
 };
 
-const debounce = (func, timeout = 1000) => {
-    let timer;
-    return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-            func.apply(this, args);
-        }, timeout);
-    };
+const handleUpload = (files) => {
+    isUpload = true
+    const uploadFiles = Array.from(files)
+    const filenames = uploadFiles.map(x => x.name.substring(0, x.name.lastIndexOf('.')) || x.name)
+    if (containsDuplicates(filenames)) {
+        duplicated = true
+    } else {
+        uploadFiles.forEach(element => {
+            if (element.size > 5 * 10 ** 8) {
+                invalidFiles = [...invalidFiles, { name: element.name }]
+            } else {
+                validFiles = [
+                    ...validFiles,
+                    {
+                        name: element.name,
+                        size: convertFileSize(element.size),
+                        ext: getFileExtension(element.name),
+                        valid: true,
+                    },
+                ];
+            }
+        })
+    }
+}
+
+const toggleRoomInput = (files) => {
+    if (files.length > 0) {
+        document.getElementById("room_name").classList.remove("hidden");
+        document.getElementById("upload-label").classList.add("hidden");
+    } else {
+        document.getElementById("room_name").classList.add("hidden");
+        document.getElementById("upload-label").classList.remove("hidden");
+    }
 };
 
-const getInvalidFile = (arr) => {
-    return arr.filter((el) => {
-        return !el.valid;
-    });
-};
-
-const handleUpload = (f) => {
-    const uploadFiles = Array.from(f);
-    uploadFiles.forEach((element) => {
-        if (element.size > 5 * 10 ** 8) {
-            files = [
-                ...files,
-                {
-                    name: element.name,
-                    size: "> 500MB",
-                    ext: getFileExtension(element.name),
-                    valid: false,
-                },
-            ];
-        } else {
-            files = [
-                ...files,
-                {
-                    name: element.name,
-                    size: convertFileSize(element.size),
-                    ext: getFileExtension(element.name),
-                    valid: true,
-                },
-            ];
-        }
-    });
-};
-
-const renderFiles = (f) => {
+const renderValidFiles = (files) => {
     let inner = "";
-    f.forEach((file) => {
+    files.forEach((file) => {
         const el = `
       <div class="flex border-2 rounded-xl h-20 w-[350px]" >
             <img src="/static/imgs/${file.ext === "csv" ? "csv" : "xlsx"}.png" class="ml-5 h-[95%]" />
@@ -78,48 +80,48 @@ const renderFiles = (f) => {
     document.getElementById("file-list").innerHTML = inner;
 };
 
-const toggleRoomInput = (f) => {
-    if (f.length > 0) {
-        document.getElementById("room_name").classList.remove("hidden");
-        document.getElementById("upload-label").classList.add("hidden");
-    } else {
-        document.getElementById("room_name").classList.add("hidden");
-        document.getElementById("upload-label").classList.remove("hidden");
-    }
-};
 
-
-const renderInvalidFiles = (f) => {
-    let inner = "<p class='font-bold text-base text-center text-red-500'>File(s) size too large! Please choose size with < 500MB</p>";
-    f.forEach(file => {
+const renderInvalidFiles = (files) => {
+    let inner = "<p class='font-bold text-base text-center text-red-500'>File(s) size > 500MB</p>";
+    files.forEach(file => {
         const el = `
     <div class="flex border-2 rounded-xl h-20 w-[350px]" >
         <img src="/static/imgs/${file.ext === "csv" ? "csv" : "xlsx"}.png" class="ml-5 h-[95%]" />
-        <div class="flex flex-col mt-3 ml-5">
+        <div class="mt-3 ml-5">
             <div class="tooltip text-left" data-tip="${file.name}">
                 <p class="text-red-500 font-semibold text-base w-[220px] whitespace-nowrap overflow-hidden text-ellipsis">
                     ${file.name}
                 </p>
             </div>
-            <p class="text-base text-red-500">${file.size}</p>
         </div>
     </div>
     `
         inner += el
     })
-    document.getElementById("file-list").innerHTML = inner;
+    document.getElementById("error-files").innerHTML = inner;
 }
 
-document.getElementById("files").addEventListener("change", (e) => {
-    handleUpload(e.target.files);
-    const invalids = getInvalidFile(files)
-    if (invalids.length > 0) {
-        renderInvalidFiles(files);
-    } else {
-        toggleRoomInput(files);
-        renderFiles(files);
-    }
-});
+if (document.getElementById("files")) {
+    document.getElementById("files").addEventListener("change", (e) => {
+        if (isUpload) {
+            validFiles = []
+            invalidFiles = []
+            duplicated = null
+        }
+        handleUpload(e.target.files);
+        if (duplicated) {
+            document.getElementById('error-section').innerHTML = `<p class="flex justify-center text-red-500 text-lg font-bold">Duplicate filename</p>`
+        } else {
+            document.getElementById('error-section').innerHTML = ""
+            if (invalidFiles.length > 0) {
+                renderInvalidFiles(invalidFiles)
+            } else {
+                renderValidFiles(validFiles)
+                toggleRoomInput(validFiles);
+            }
+        }
+    });
+}
 
 
 const observerFactory = (targetNode, callback) => {
@@ -143,16 +145,7 @@ const observeResponseHandler = (mutationList, observer) => {
 };
 
 
-const observeResponse = observerFactory(document.getElementById("response"), observeResponseHandler)
-
-// const targetNode = document.getElementById("response");
-
-// const config = { childList: true };
-
-
-
-// const observer = new MutationObserver(callback);
-
-// observer.observe(targetNode, config);
-
+if (document.getElementById("response")) {
+    const observeResponse = observerFactory(document.getElementById("response"), observeResponseHandler)
+}
 

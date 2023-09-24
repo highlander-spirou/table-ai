@@ -1,12 +1,12 @@
 """
 This module contains controllers for HTMX response
 """
-from flask import Blueprint, abort, request
+from flask import Blueprint, abort, request, flash
 from flask_htmx import HTMX
 from utils import render_view
 from interfaces import *
-from store import room_name
-
+import pandas as pd
+from models import RoomUtils, DataframeUtils
 
 htmx_routes = Blueprint('htmx_routes', __name__,
                         template_folder='templates/htmx_response')
@@ -24,7 +24,7 @@ def htmx_check_middleware():
 def check_existing_room():
     q = request.args.get('room_name')
     if q:
-        if q in room_name:
+        if RoomUtils.find_room(q) is not None:
             props: ExistingRoomInterface = {
                 'status': False, 'message': 'Room name exist! Please choose another room name'}
         else:
@@ -35,6 +35,37 @@ def check_existing_room():
         props: ExistingRoomInterface = {
             'status': False, 'message': 'Room name is empty'}
         return render_view('htmx_response/existing_room.html', props=props)
+
+
+@htmx_routes.route('/get-table')
+def get_table():
+    room_name = request.args.get('room_name')
+    table_name = request.args.get('table_name')
+
+    if room_name is None or table_name is None:
+        flash('Error accessing dashboard')
+        return abort(404)
+    else:
+        df = pd.read_parquet(
+            f'./uploads/{room_name}/{table_name}.parquet.gzip')
+        result = df.iloc[0:5].to_dict('split')
+        props: TableInterface = {'result': result,
+                                 'table_name': table_name, 'room_name': room_name}
+
+        alias = DataframeUtils.get_alias(room_name, table_name)
+        if alias is not None:
+            props['alias'] = alias
+        return render_view('htmx_response/table.html', props=props)
+
+
+@htmx_routes.route('/change-alias', methods=['POST'])
+def haha():
+    new_alias, room_name, table_name = [request.form.get(
+        i) for i in ('change_alias', 'room_name', 'table_name')]
+    DataframeUtils.update_alias(room_name, table_name, new_alias)
+    return f'<p>Alias: {new_alias}</p>'
+
+
 # @htmx_routes.route('/a/<int:button_id>')
 # def confirm_btn_click(button_id:int):
 #     btn_clicked = filter_dict_list(li, 'id', button_id)

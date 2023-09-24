@@ -1,0 +1,31 @@
+{% extends 'layout.html' %} {% block body %}
+{% import 'components/flash_message.html' as flash_message %}
+
+<div id="flash-wrapper">
+    {{ flash_message.flash_message() }}
+</div>
+
+<div class="relative flex flex-col items-center justify-center h-screen overflow-hidden">
+    <div class="w-full p-6 bg-white border-t-4 border-gray-600 rounded-md shadow-md border-top lg:max-w-lg">
+        <h1 class="text-3xl font-semibold text-center text-gray-700">Sign up</h1>
+        <form class="space-y-4" action="/signup" method="post" >
+            {{ form.hidden_tag() }}
+            <div>
+                <label class="label">
+                    <span class="text-base label-text font-semibold">{{ form.username.label }}</span>
+                </label>
+                {{ form.username(class="w-full input input-bordered") }}
+            </div>
+            <div>
+                <label class="label">
+                    <span class="text-base label-text font-semibold">{{ form.password.label }}</span>
+                </label>
+                {{ form.password(class="w-full input input-bordered") }}
+            </div>
+            <div>
+                {{ form.submit(class="btn btn-block btn-neutral") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

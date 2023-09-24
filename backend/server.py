@@ -1,11 +1,16 @@
 from flask import Flask, render_template
 import json
 from config import Config
+from models import db
 from routes import htmx_routes, normal_routes
 
 app = Flask(__name__, static_url_path='/static')
 
 app.config.from_object(Config)
+
+db.init_app(app)
+with app.app_context():
+    db.create_all()
 
 def get_static_javascript():
     with open('./static/dist/manifest.json') as f:

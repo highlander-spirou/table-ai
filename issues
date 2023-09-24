@@ -1,0 +1,1 @@
+- Tên upload file ko đc trùng nhau => sẽ bị strip thành .parquet.gzip hết ✅
