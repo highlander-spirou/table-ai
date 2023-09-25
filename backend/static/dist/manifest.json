@@ -1,0 +1,41 @@
+{
+  "_modulepreload-polyfill-3cfb730f.js": {
+    "file": "assets/modulepreload-polyfill-3cfb730f.js"
+  },
+  "assets/csv.png": {
+    "file": "assets/csv-097ca35c.png",
+    "src": "assets/csv.png"
+  },
+  "assets/xlsx.png": {
+    "file": "assets/xlsx-7aa7ca3a.png",
+    "src": "assets/xlsx.png"
+  },
+  "index.css": {
+    "file": "assets/index-d34ce0fc.css",
+    "src": "index.css"
+  },
+  "templates/components/flash_message.html": {
+    "file": "assets/flash_message-c0862b01.js",
+    "imports": [
+      "_modulepreload-polyfill-3cfb730f.js"
+    ],
+    "isEntry": true,
+    "src": "templates/components/flash_message.html"
+  },
+  "templates/index.html": {
+    "assets": [
+      "assets/csv-097ca35c.png",
+      "assets/xlsx-7aa7ca3a.png"
+    ],
+    "file": "assets/index-3cee67f7.js",
+    "imports": [
+      "_modulepreload-polyfill-3cfb730f.js"
+    ],
+    "isEntry": true,
+    "src": "templates/index.html"
+  },
+  "templates/layout.css": {
+    "file": "assets/layout-5cfe6141.css",
+    "src": "templates/layout.css"
+  }
+}

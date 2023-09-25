@@ -1,3 +1,6 @@
+import { observeResponseHandler, observerFactory } from "./src/oberver"
+import csvImg from '../assets/csv.png'
+import xlsxImg from '../assets/xlsx.png'
 let isUpload = false
 let validFiles = []
 let invalidFiles = []
@@ -65,7 +68,7 @@ const renderValidFiles = (files) => {
     files.forEach((file) => {
         const el = `
       <div class="flex border-2 rounded-xl h-20 w-[350px]" >
-            <img src="/static/imgs/${file.ext === "csv" ? "csv" : "xlsx"}.png" class="ml-5 h-[95%]" />
+            <img src="${file.ext === "csv" ? `${csvImg}` : `${xlsxImg}`}" class="ml-5 h-[95%]" />
             <div class="flex flex-col mt-3 ml-5">
                 <div class="tooltip text-left" data-tip="${file.name}">
                     <p class="text-slate-700 font-semibold text-base w-[220px] whitespace-nowrap overflow-hidden text-ellipsis">${file.name
@@ -101,51 +104,26 @@ const renderInvalidFiles = (files) => {
     document.getElementById("error-files").innerHTML = inner;
 }
 
-if (document.getElementById("files")) {
-    document.getElementById("files").addEventListener("change", (e) => {
-        if (isUpload) {
-            validFiles = []
-            invalidFiles = []
-            duplicated = null
-        }
-        handleUpload(e.target.files);
-        if (duplicated) {
-            document.getElementById('error-section').innerHTML = `<p class="flex justify-center text-red-500 text-lg font-bold">Duplicate filename</p>`
+document.getElementById("files").addEventListener("change", (e) => {
+    if (isUpload) {
+        validFiles = []
+        invalidFiles = []
+        duplicated = null
+    }
+    handleUpload(e.target.files);
+    if (duplicated) {
+        document.getElementById('error-section').innerHTML = `<p class="flex justify-center text-red-500 text-lg font-bold">Duplicate filename</p>`
+    } else {
+        document.getElementById('error-section').innerHTML = ""
+        if (invalidFiles.length > 0) {
+            renderInvalidFiles(invalidFiles)
         } else {
-            document.getElementById('error-section').innerHTML = ""
-            if (invalidFiles.length > 0) {
-                renderInvalidFiles(invalidFiles)
-            } else {
-                renderValidFiles(validFiles)
-                toggleRoomInput(validFiles);
-            }
-        }
-    });
-}
-
-
-const observerFactory = (targetNode, callback) => {
-    const config = { childList: true };
-    const observer = new MutationObserver(callback);
-    observer.observe(targetNode, config);
-}
-
-const observeResponseHandler = (mutationList, observer) => {
-    for (const mutation of mutationList) {
-        if (mutation.type === "childList") {
-            const innerElement = mutation.target.querySelector("#response-status");
-            const status = innerElement.getAttribute("status");
-            if (status === "True") {
-                document.getElementById("submit").classList.remove("hidden");
-            } else {
-                document.getElementById("submit").classList.add("hidden");
-            }
+            renderValidFiles(validFiles)
+            toggleRoomInput(validFiles);
         }
     }
-};
+});
 
 
-if (document.getElementById("response")) {
-    const observeResponse = observerFactory(document.getElementById("response"), observeResponseHandler)
-}
+const observeResponse = observerFactory(document.getElementById("response"), observeResponseHandler)
 

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://unpkg.com/htmx.org@1.9.5"
+    integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"
+    defer></script>
+  <script src="//unpkg.com/alpinejs" defer></script>
+  
+  
+  <title>{{ props['title'] or "Table AI"}}</title>
+  <link rel="stylesheet" href="/assets/layout-5cfe6141.css">
+  <link rel="stylesheet" href="/assets/index-d34ce0fc.css">
+</head>
+
+<body>
+  {% block body %}{% endblock %}
+  <div id="app"></div>
+</body>
+
+</html>

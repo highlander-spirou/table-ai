@@ -4,18 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  {% if environment == 'dev' %}
-  <script type="module" src="http://localhost:5173/@vite/client"></script>
-  <script type="module" src="http://localhost:5173/main.js"></script>
-  {% else %}
-  <script type="module" src="{{ get_static_javascript() }}"></script>
-  {% endif %}
-  <link rel="stylesheet" href="{{url_for('static',filename='dist/css/output.css')}}" />
-  <link rel="stylesheet" href="{{url_for('static',filename='dist/css/no-scrollbar.css')}}" />
   <script src="https://unpkg.com/htmx.org@1.9.5"
     integrity="sha384-xcuj3WpfgjlKF+FXhSQFQ0ZNr39ln+hwjN3npfM9VBnUskLolQAcN80McRIVOPuO" crossorigin="anonymous"
     defer></script>
   <script src="//unpkg.com/alpinejs" defer></script>
+  <link rel="stylesheet" href="./index.css">
+  <link rel="stylesheet" href="./no-scrollbar.css">
   <title>{{ props['title'] or "Table AI"}}</title>
 </head>
 
