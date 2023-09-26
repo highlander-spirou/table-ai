@@ -1,9 +1,6 @@
-<script type="module" crossorigin src="/assets/index-863b245f.js"></script>
-<link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-3cfb730f.js">
-<link rel="modulepreload" crossorigin href="/assets/oberver-418382cd.js">
 {% extends 'layout.html' %} {% block body %}
 {% import 'components/flash_message.html' as flash_message %}
-
+<script type="module" src="./index.js" defer></script>
 
 <div id="flash-wrapper">
     {{ flash_message.flash_message() }}

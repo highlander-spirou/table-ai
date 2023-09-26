@@ -17,7 +17,10 @@ export default defineConfig({
                 login: resolve(__dirname, 'templates/login.html'),
                 sth: resolve(__dirname, 'templates/sth.html'),
                 404: resolve(__dirname, 'templates/404.html'),
+                test_view: resolve(__dirname, 'templates/test_view.html'),
                 flash_message: resolve(__dirname, 'templates/components/flash_message.html'),
+                table: resolve(__dirname, 'templates/htmx_response/table.html'),
+                validate_form: resolve(__dirname, 'templates/htmx_response/validate_form.html'),
             }
         },
     },

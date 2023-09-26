@@ -38,18 +38,21 @@ def index():
             return redirect('/')
     return render_view('index.html', form=form)
 
+
 @normal_routes.route('/dashboard')
 @login_required
 def dashboard():
-    
-    return render_view('sth.html')
+
+    return render_view('dashboard.html')
+
 
 @normal_routes.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignUpForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            UserUtils.create_user(request.form.get('username'), request.form.get('password'))
+            UserUtils.create_user(request.form.get(
+                'username'), request.form.get('password'))
             return redirect('/login')
         else:
             flash('Submit error')
@@ -65,13 +68,15 @@ def login():
     form = SignInForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            user = UserUtils.login_user(form.login_username.data, form.password.data)
+            user = UserUtils.login_user(
+                form.login_username.data, form.password.data)
             login_user(user)
-            
+
             # Redirect to protected route
             next = request.args.get('next')
-            if next == None or not next[0]=='/': 
-                next = url_for('normal_routes.dashboard') # Default navigate to dashboard on `user_authenticated`
+            if next == None or not next[0] == '/':
+                # Default navigate to dashboard on `user_authenticated`
+                next = url_for('normal_routes.dashboard')
 
             return redirect(next)
         else:
@@ -80,6 +85,23 @@ def login():
 
     return render_view('login.html', form=form)
 
+
+@normal_routes.route('/test_create_room', methods=['GET', 'POST'])
+def test_create_room():
+    if UserUtils.find_user('asd') is None:
+        UserUtils.create_user('asd', 'asd')
+        login_user(UserUtils.find_user('asd'))
+    rooms = UserUtils.list_room(current_user.id)
+    for room in rooms:
+        print(room.name, room.get_dataframe_names())
+    if request.method == 'POST':
+        room_name = request.form.get('room_name')
+        file_name = request.form.get('file_name')
+        target_room = RoomUtils.find_room(room_name)
+        if target_room is None:
+            target_room = RoomUtils.add_new_room(room_name, current_user)
+        DataframeUtils.add_dataframe(target_room, file_name)
+    return render_view('test_view.html')
 
 # @normal_routes.route('/dashboard')
 # def dashboard():

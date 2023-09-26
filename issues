@@ -1,1 +1,2 @@
 - Tên upload file ko đc trùng nhau => sẽ bị strip thành .parquet.gzip hết ✅
+- Thay sth.html -> dashboard.html, dashboard.html -> tables.html

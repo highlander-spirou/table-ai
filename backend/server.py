@@ -16,11 +16,12 @@ login_manager.login_view = 'normal_routes.login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return db.session.get(User, user_id)
 
 
 with app.app_context():
     db.create_all()
+
 
 app.register_blueprint(normal_routes)
 app.register_blueprint(htmx_routes)

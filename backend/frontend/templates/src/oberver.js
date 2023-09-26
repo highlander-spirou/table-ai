@@ -7,6 +7,7 @@ const observerFactory = (targetNode, callback) => {
 const observeResponseHandler = (mutationList, observer) => {
     for (const mutation of mutationList) {
         if (mutation.type === "childList") {
+            console.log('active')
             const innerElement = mutation.target.querySelector("#response-status");
             const status = innerElement.getAttribute("status");
             if (status === "True") {

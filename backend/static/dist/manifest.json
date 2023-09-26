@@ -2,6 +2,9 @@
   "_modulepreload-polyfill-3cfb730f.js": {
     "file": "assets/modulepreload-polyfill-3cfb730f.js"
   },
+  "_oberver-418382cd.js": {
+    "file": "assets/oberver-418382cd.js"
+  },
   "assets/csv.png": {
     "file": "assets/csv-097ca35c.png",
     "src": "assets/csv.png"
@@ -11,7 +14,7 @@
     "src": "assets/xlsx.png"
   },
   "index.css": {
-    "file": "assets/index-d34ce0fc.css",
+    "file": "assets/index-ed06d957.css",
     "src": "index.css"
   },
   "templates/components/flash_message.html": {
@@ -22,14 +25,24 @@
     "isEntry": true,
     "src": "templates/components/flash_message.html"
   },
+  "templates/htmx_response/validate_form.html": {
+    "file": "assets/validate_form-91d84f11.js",
+    "imports": [
+      "_modulepreload-polyfill-3cfb730f.js",
+      "_oberver-418382cd.js"
+    ],
+    "isEntry": true,
+    "src": "templates/htmx_response/validate_form.html"
+  },
   "templates/index.html": {
     "assets": [
       "assets/csv-097ca35c.png",
       "assets/xlsx-7aa7ca3a.png"
     ],
-    "file": "assets/index-3cee67f7.js",
+    "file": "assets/index-863b245f.js",
     "imports": [
-      "_modulepreload-polyfill-3cfb730f.js"
+      "_modulepreload-polyfill-3cfb730f.js",
+      "_oberver-418382cd.js"
     ],
     "isEntry": true,
     "src": "templates/index.html"

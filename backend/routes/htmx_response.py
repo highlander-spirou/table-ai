@@ -25,16 +25,15 @@ def check_existing_room():
     q = request.args.get('room_name')
     if q:
         if RoomUtils.find_room(q) is not None:
-            props: ExistingRoomInterface = {
+            props: ValidateFormInterface = {
                 'status': False, 'message': 'Room name exist! Please choose another room name'}
         else:
-            props: ExistingRoomInterface = {
+            props: ValidateFormInterface = {
                 'status': True, 'message': 'Room name valid'}
-        return render_view('htmx_response/existing_room.html', props=props)
     else:
-        props: ExistingRoomInterface = {
+        props: ValidateFormInterface = {
             'status': False, 'message': 'Room name is empty'}
-        return render_view('htmx_response/existing_room.html', props=props)
+    return render_view('htmx_response/validate_form.html', props=props)
 
 
 @htmx_routes.route('/get-table')
@@ -76,7 +75,7 @@ def check_existing_username():
             props: ExistingUsernameInterface = {'status': True, 'message': 'Username valid'}
     else:
         props: ExistingUsernameInterface = {'status': False, 'message': 'Username empty'}
-    return render_view('htmx_response/existing_username.html', props=props)
+    return render_view('htmx_response/validate_form.html', props=props)
 
 # @htmx_routes.route('/a/<int:button_id>')
 # def confirm_btn_click(button_id:int):

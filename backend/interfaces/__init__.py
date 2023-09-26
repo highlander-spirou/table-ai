@@ -14,7 +14,7 @@ class HTMXBaseInterface(TypedDict):
     """
 
 
-class ExistingRoomInterface(HTMXBaseInterface):
+class ValidateFormInterface(HTMXBaseInterface):
     status: bool
     message: str
 
