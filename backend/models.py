@@ -20,6 +20,7 @@ def create_hash_str(s):
     hashed = str(randint(1_000_000, 9_999_999_999))
     return s + '_' + hashed
 
+
 class User(db.Model, UserMixin):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     username: Mapped[str] = mapped_column(String, unique=True, nullable=False)
@@ -39,13 +40,16 @@ class Room(db.Model):
     )
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String, nullable=False)
-    hashed_name: Mapped[Optional[str]] = mapped_column(String, nullable=False, unique=True)
+    hashed_name: Mapped[Optional[str]] = mapped_column(
+        String, nullable=False, unique=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     owner: Mapped["User"] = relationship(back_populates="rooms")
-    dataframes: Mapped[List['Dataframe']] = relationship(back_populates="room_owner")
+    dataframes: Mapped[List['Dataframe']] = relationship(
+        back_populates="room_owner")
 
-    def get_dataframe_names(self):
-        return [df.short_name for df in self.dataframes]
+    def get_dataframe_attr(self, attr: str):
+        return [df.__getattribute__(attr) for df in self.dataframes]
+
 
 class Dataframe(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -57,10 +61,16 @@ class Dataframe(db.Model):
     @property
     def short_name(self):
         return self.file_name.split('/')[1]
+    
+    @property
+    def table_meta(self):
+        return {'alias': self.alias, 'table_name': self.file_name}
+
 
 @event.listens_for(Room, "before_insert")
 def hash_room_name(mapper, connection, target: Room):
     target.hashed_name = create_hash_str(target.name)
+
 
 @event.listens_for(Room, "after_insert")
 def ensure_path(mapper, connection, target: Room):
@@ -96,20 +106,21 @@ class UserUtils:
         user = User.query.filter(User.id == user_id).one_or_none()
         return user.rooms
 
+
 class RoomUtils:
     """
     Utilities functions for `Room` table, to reduce import in controller file
     """
     @staticmethod
-    def add_new_room(name: str, user: User) -> User:
+    def add_new_room(name: str, user: User) -> Room:
         new_room = Room(name=name, owner=user)
         db.session.add(new_room)
         db.session.commit()
         return new_room
 
     @staticmethod
-    def find_room(name: str):
-        return Room.query.filter(Room.name == name).one_or_none()
+    def find_room(name: str, current_user: User) -> Optional[Room]:
+        return Room.query.filter(and_(Room.name == name, Room.owner_id == current_user.id)).one_or_none()
 
     @staticmethod
     def delete_room(name: str):
@@ -117,7 +128,6 @@ class RoomUtils:
         if obj is not None:
             db.session.delete(obj)
             db.session.commit()
-
 
 
 class DataframeUtils:
@@ -132,21 +142,17 @@ class DataframeUtils:
         db.session.commit()
 
     @staticmethod
-    def list_dataframe_from_room(room_name) -> List[Dataframe]:
-        return Dataframe.query.filter(Dataframe.room_name == room_name).all()
-
-    @staticmethod
-    def get_alias(room_name, file_name):
-        result: Dataframe = Dataframe.query.filter(and_(
-            Dataframe.room_name == room_name, Dataframe.file_name == file_name)).one_or_none()
-        if result is not None:
-            return result.alias
-        else:
-            return result
-
-    @staticmethod
     def update_alias(room_name, file_name, new_alias):
         obj: Dataframe = Dataframe.query.filter(
             and_(Dataframe.room_name == room_name, Dataframe.file_name == file_name)).first()
         obj.alias = new_alias
         db.session.commit()
+
+    @staticmethod
+    def verify_onwership(user_id: str, file_name: str):
+        df:Dataframe = Dataframe.query.filter(Dataframe.file_name == file_name).one_or_none()
+        return df.room_owner.owner_id  == user_id
+    
+    @staticmethod
+    def find_dataframe(name) -> Dataframe:
+        return Dataframe.query.filter(Dataframe.file_name == name).one()

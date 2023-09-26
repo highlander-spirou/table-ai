@@ -1,5 +1,23 @@
 {% extends 'layout.html' %} {% block body %}
 <div class="page-wrapper mt-3 ml-5">
     <h1 class="text-2xl font-bold">Welcome {{ current_user.username }} 👋</h1>
+    <a class="btn btn-outline btn-info" href="/upload">Upload</a>
+    <a class="btn btn-outline btn-danger" href="/signout">Sign out</a>
+    {% for room in props['room_list'] %}
+    <div class="flex gap-5">
+        <p>Room <span class="font-bold text-gray-500">{{ room[0] }}</span></p>
+        <a href="/tables?room_name={{ room[0] }}" class="link link-neutral">Preview data</a>
+        <a href="" class="link link-primary">Ask AI</a>
+    </div>
+    <div class="flex gap-5">
+        
+        {% for index, entry in enumerate(room[1]) %}
+        <ul class="border-2 max-w-[200px] p-3">
+            <li>Table: {{ entry }}</li>
+            <li>Alias: {{ room[2][index] }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

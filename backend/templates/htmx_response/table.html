@@ -43,13 +43,13 @@
                 <table class="table table-sm table-pin-rows">
                     <thead>
                         <tr>
-                            {% for col_name in props['result']['columns'] %}
+                            {% for col_name in props['table_view']['columns'] %}
                             <th>{{ col_name }}</th>
                             {% endfor %}
                         </tr>
                     </thead>
                     <tbody>
-                        {% for row in props['result']['data'] %}
+                        {% for row in props['table_view']['data'] %}
                         <tr>
                             {% for cell in row %}
                             <td>{{ cell }}</td>

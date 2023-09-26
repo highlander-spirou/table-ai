@@ -12,7 +12,9 @@ export default defineConfig({
             input: {
                 layout: resolve(__dirname, 'templates/layout.html'),
                 index: resolve(__dirname, 'templates/index.html'),
+                upload: resolve(__dirname, 'templates/upload.html'),
                 dashboard: resolve(__dirname, 'templates/dashboard.html'),
+                tables: resolve(__dirname, 'templates/tables.html'),
                 signup: resolve(__dirname, 'templates/signup.html'),
                 login: resolve(__dirname, 'templates/login.html'),
                 sth: resolve(__dirname, 'templates/sth.html'),

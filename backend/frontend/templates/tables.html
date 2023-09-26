@@ -1,9 +1,15 @@
 {% extends 'layout.html' %} {% block body %}
-<div id="table-list">
+<p>hello world</p>
+<!-- <div id="table-list">
     {% for f in props['files'] %}
     <div hx-get="/get-table?room_name={{ props['room_name'] }}&table_name={{ f }}" hx-target="#table-reponse-{{ f }}"
     hx-trigger="load once"></div>
     <div id="table-reponse-{{ f }}" class="table-list"></div>
     {% endfor %}
-</div>
+</div> -->
+{% for file in props['files'] %}
+<div hx-get="/get-table?table_name={{ file.file_name }}" hx-trigger="load once"
+    hx-target="#table-reponse-{{ file.file_name }}"></div>
+<div id="table-reponse-{{ file.file_name }}"></div>
+{% endfor %}
 {% endblock %}

@@ -20,15 +20,14 @@ class ValidateFormInterface(HTMXBaseInterface):
 
 
 class DashBoardInterface(ViewBaseInterface):
-    files: list
-    room_name: str
+    room_list: list
 
+class TablesInterface(ViewBaseInterface):
+    files: list
 
 class TableInterface(HTMXBaseInterface):
-    result: dict
-    table_name: str
-    room_name: str
-    alias: Optional[str]
+    table_view: dict
+    table_meta: dict
 
 
 class ExistingUsernameInterface(HTMXBaseInterface):

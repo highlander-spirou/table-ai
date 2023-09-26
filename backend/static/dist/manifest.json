@@ -14,7 +14,7 @@
     "src": "assets/xlsx.png"
   },
   "index.css": {
-    "file": "assets/index-ed06d957.css",
+    "file": "assets/index-d869e014.css",
     "src": "index.css"
   },
   "templates/components/flash_message.html": {
@@ -34,21 +34,21 @@
     "isEntry": true,
     "src": "templates/htmx_response/validate_form.html"
   },
-  "templates/index.html": {
+  "templates/layout.css": {
+    "file": "assets/layout-5cfe6141.css",
+    "src": "templates/layout.css"
+  },
+  "templates/upload.html": {
     "assets": [
       "assets/csv-097ca35c.png",
       "assets/xlsx-7aa7ca3a.png"
     ],
-    "file": "assets/index-863b245f.js",
+    "file": "assets/upload-863b245f.js",
     "imports": [
       "_modulepreload-polyfill-3cfb730f.js",
       "_oberver-418382cd.js"
     ],
     "isEntry": true,
-    "src": "templates/index.html"
-  },
-  "templates/layout.css": {
-    "file": "assets/layout-5cfe6141.css",
-    "src": "templates/layout.css"
+    "src": "templates/upload.html"
   }
 }

@@ -13,6 +13,10 @@ db.init_app(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'normal_routes.login'
 
+@app.context_processor
+def setup_global():
+    return dict(enumerate=enumerate)
+
 
 @login_manager.user_loader
 def load_user(user_id):

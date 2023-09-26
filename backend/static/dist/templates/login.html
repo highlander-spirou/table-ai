@@ -7,8 +7,8 @@
 
 <div class="relative flex flex-col items-center justify-center h-screen overflow-hidden">
     <div class="w-full p-6 bg-white border-t-4 border-gray-600 rounded-md shadow-md border-top lg:max-w-lg">
-        <h1 class="text-3xl font-semibold text-center text-gray-700">Sign In</h1>
-        <form class="space-y-4" action="/login" method="post">
+        <h1 class="text-3xl font-semibold text-center text-gray-700">Log In</h1>
+        <form class="space-y-4" action="{{ url_for('normal_routes.login', next=request.args.get('next')) }}" method="post">
             {{ form.hidden_tag() }}
             <div>
                 <label class="label">
@@ -22,6 +22,7 @@
                 </label>
                 {{ form.password(class="w-full input input-bordered") }}
             </div>
+            <a href="/signup" class="flex justify-center link link-primary">Don't have an account? Sign up here</a>
             <div>
                 {{ form.submit(class="btn btn-block btn-neutral") }}
             </div>
