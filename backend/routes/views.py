@@ -68,11 +68,11 @@ def tables():
     room_name = request.args.get('room_name')
     if room_name is None:
         flash('Error accessing tables page')
-        abort(404)
+        abort(400)
     room = RoomUtils.find_room(room_name, current_user)
     if room is None:
         flash('Room not exist')
-        abort(404)
+        abort(400)
     props: TablesInterface = {'title': 'Preview data', 'files': room.dataframes}
     return render_view('tables.html', props=props)
 

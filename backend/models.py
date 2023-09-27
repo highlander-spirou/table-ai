@@ -51,6 +51,7 @@ class Room(db.Model):
         return [df.__getattribute__(attr) for df in self.dataframes]
 
 
+
 class Dataframe(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     file_name: Mapped[str] = mapped_column(String, nullable=False, unique=True)
@@ -61,10 +62,11 @@ class Dataframe(db.Model):
     @property
     def short_name(self):
         return self.file_name.split('/')[1]
-    
+
     @property
     def table_meta(self):
         return {'alias': self.alias, 'table_name': self.file_name}
+    
 
 
 @event.listens_for(Room, "before_insert")
@@ -150,9 +152,10 @@ class DataframeUtils:
 
     @staticmethod
     def verify_onwership(user_id: str, file_name: str):
-        df:Dataframe = Dataframe.query.filter(Dataframe.file_name == file_name).one_or_none()
-        return df.room_owner.owner_id  == user_id
-    
+        df: Dataframe = Dataframe.query.filter(
+            Dataframe.file_name == file_name).one_or_none()
+        return df.room_owner.owner_id == user_id
+
     @staticmethod
     def find_dataframe(name) -> Dataframe:
         return Dataframe.query.filter(Dataframe.file_name == name).one()

@@ -9,16 +9,16 @@
                 </svg>
             </div>
             <div id="response-{{ props['table_name'] }}">
-                {% if 'alias' not in props %}
+                {% if props['table_meta']['alias'] == None %}
                 <form hx-post="/change-alias" hx-trigger="submit"
-                    hx-vals='{"room_name": "{{ props["room_name"] }}", "table_name": "{{ props["table_name"] }}"}'>
+                    hx-vals='{"table_name": "{{ props["table_meta"]["table_name"] }}"}'>
                     <input name='change_alias' class="input input-bordered input-sm"
                         placeholder="Create alias for table"></input>
                     <button class="btn btn-sm" type="submit">Submit</button>
                 </form>
                 {% else %}
                 <div class="flex gap-2">
-                    <p>Alias: {{ props['alias'] }}</p>
+                    <p>Alias: {{ props['table_meta']['alias'] }}</p>
                     <button class="btn btn-sm" @click="open = !open">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor" class="w-6 h-6">

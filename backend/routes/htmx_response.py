@@ -64,10 +64,11 @@ def get_table():
 
 @htmx_routes.route('/change-alias', methods=['POST'])
 def change_alias():
-    new_alias, room_name, table_name = [request.form.get(
-        i) for i in ('change_alias', 'room_name', 'table_name')]
-    DataframeUtils.update_alias(room_name, table_name, new_alias)
-    return f'<p>Alias: {new_alias}</p>'
+    
+    # new_alias, room_name, table_name = [request.form.get(
+    #     i) for i in ('change_alias', 'room_name', 'table_name')]
+    # DataframeUtils.update_alias(room_name, table_name, new_alias)
+    return f'<p>Alias: hahah</p>'
 
 
 @htmx_routes.route('/existing_username')

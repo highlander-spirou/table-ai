@@ -9,7 +9,7 @@
 </div> -->
 {% for file in props['files'] %}
 <div hx-get="/get-table?table_name={{ file.file_name }}" hx-trigger="load once"
-    hx-target="#table-reponse-{{ file.file_name }}"></div>
-<div id="table-reponse-{{ file.file_name }}"></div>
+    hx-target="#table-reponse-{{ file.shortname }}"></div>
+<div id="table-reponse-{{ file.shortname }}"></div>
 {% endfor %}
 {% endblock %}
