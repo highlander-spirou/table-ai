@@ -1,0 +1,64 @@
+import duckdb
+import re
+import cohere
+API_KEY = 'vSULf5lQOyNZ9mUaOFjIuMlwmYkbafZikmXtH8c1'
+co = cohere.Client(API_KEY)
+
+query = """
+Table table_1 has following schema:
+
+#: int
+Name: str
+Type 1: str
+Type 2: str
+Total: int
+HP: int
+Attack: int
+Defense: int
+Sp. Atk: int
+Sp. Def: int
+Speed: int
+Generation: int
+Legendary: bool
+
+Write a SQL query that:
+Show the name of the highest HP that also a Legendary
+"""
+
+response = co.generate(query, model='command-nightly',max_tokens=544, temperature=0)
+
+result = response.generations[0].text
+sql_code = re.findall(r'
+([^```]*)```', result)[0]
+if 'sql'in sql_code:
+    sql_code = sql_code.split('\n')[1]
+
+alias = ("table_1", "\"./data/pokemon.csv\"")
+statement = sql_code.replace(alias[0], alias[1])
+source = duckdb.sql(statement)
+
+print(source.fetchall())
+
+
+
+# prompt = """
+# Here is a SQL query that finds the name with the highest "HP" and lowest "Speed" from table_1:
+# ```sql
+# SELECT Name FROM table_1 ORDER BY HP DESC, Speed ASC LIMIT 1;
+# 
+# This query will order the results by HP in descending order and by Speed in ascending order. The LIMIT 1 at the end ensures only the first row is returned.
+# """
+
+# result = re.findall(r'```([^```]*)```', prompt)[0]
+# if 'sql'in result:
+#     result = result.split('\n')[1]
+
+# alias = ("table_1", "\"./data/pokemon.csv\"")
+
+# statement = result.replace(alias[0], alias[1])
+
+# print('statement', statement)
+# source = duckdb.sql(statement)
+
+
+# print(source.fetchall())
