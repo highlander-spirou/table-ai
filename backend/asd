@@ -28,8 +28,7 @@ Show the name of the highest HP that also a Legendary
 response = co.generate(query, model='command-nightly',max_tokens=544, temperature=0)
 
 result = response.generations[0].text
-sql_code = re.findall(r'
-([^```]*)```', result)[0]
+sql_code = re.findall(r'([^```]*)```', result)[0]
 if 'sql'in sql_code:
     sql_code = sql_code.split('\n')[1]
 
