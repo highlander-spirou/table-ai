@@ -14,6 +14,8 @@ fastparquet = "^2023.8.0"
 fastapi = {extras = ["all"], version = "^0.103.1"}
 python-multipart = "^0.0.6"
 cohere = "^4.27"
+uuid = "^1.30"
+sqlalchemy = "^2.0.21"
 
 
 [build-system]
