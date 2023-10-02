@@ -35,5 +35,5 @@ class ParquetConversionError(UserWarning):
     pass
 
 
-class TokenUnAuth(UserWarning):
+class FileNotExisted(UserWarning):
     pass

@@ -14,6 +14,11 @@ def get_client_id(request: Request):
         raise HeaderMissing
     return client_header
 
+
+class Request:
+    def __init__(self, client_id) -> None:
+        self.headers = {'client-id': client_id}
+
 def AuthFlow(request:Request, client_utils: ClientUtils):
     """
     Return `Client` or exceptions
@@ -62,6 +67,6 @@ def LoginOptional(request:Request, client_utils: ClientUtils) -> Client:
 
 
 
-client_id = 'hello-world'
+# request = Request('hello-world')
 
-LoginRequired(client_id, client_utils)
+# LoginRequired(request, client_utils)
