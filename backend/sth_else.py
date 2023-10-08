@@ -1,10 +1,13 @@
-from networkx import DiGraph
+from sth import *
 
-a = DiGraph()
+file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
+alias = 'tbl_1'
 
 
-print('before', len(a.nodes))
+df = get_df(file_path)
+schema = get_schema(df)
+question_1 = 'Name of the highest HP pokemon that also a Legendary.'
 
-a.add_node('a')
+prompt = create_prompt(schema, alias, question_1, "Name, Attack, Type 1")
 
-print('after', len(a.nodes))
+print(prompt)

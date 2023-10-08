@@ -7,6 +7,7 @@ from cohere import Client
 import re
 from ChainExecutor import ChainExecutor
 import networkx as nx
+from typing import Optional
 
 API_KEY = 'vSULf5lQOyNZ9mUaOFjIuMlwmYkbafZikmXtH8c1'
 env = Environment()
@@ -26,9 +27,9 @@ def get_schema(df):
     return get_table_meta(df)
 
 
-def create_prompt(schema, alias, question):
+def create_prompt(schema, alias, question, select: Optional[str] = None):
     return prompt_tmpl.render(
-        table_alias=alias, schema=schema, question=question)
+        table_alias=alias, schema=schema, question=question, select=select)
 
 
 def get_cohere_suggestion(prompt):
@@ -65,12 +66,14 @@ def fix_table_name(s, alias):
     Fix common cohere prompt where it sometimes refer alias as `table`
     """
     if 'table' in s:
-        return s.replace('table', alias)
+        new_str = s.replace('table', alias)
+        return new_str
     else:
         return s
 
 
 def fix_space_contained_table(q, schema):
+    print('table fix query', q)
     column_names = [i[0] for i in schema if " " in i[0]]
     q2 = q
     for i in column_names:
@@ -123,28 +126,30 @@ class AIFlow:
         """
         self.fix_flow.add_node(fix_table_name, args={'alias': self.alias}) \
             .add_node(fix_space_contained_table, args={'schema': self.ai_flow.get_node_result('get_schema')})
-        
+
         self.fix_flow.add_edge_from_node_order()
 
     def __auto_fix_query(self, falsey_query):
-        print('error found, running auto fix')
+        print(f'Error found on query:\n{falsey_query}')
         if len(self.fix_flow.g.nodes) == 0:
-                self.__construct_error_flow()
+            self.__construct_error_flow()
 
-        self.fix_flow.update_node_args('fix_table_name', args={'s': falsey_query})
+        self.fix_flow.update_node_args(
+            'fix_table_name', args={'s': falsey_query})
         self.fix_flow.execute()
         return self.fix_flow.get_node_result('fix_space_contained_table')
-    
 
-    
-        
+    def manual_run_query(self, query):
+        df = self.ai_flow.get_node_result('get_df')
+        return run_query(df, query, self.alias)
 
-    def answer_question(self, question):
+    def answer_question(self, question, select: Optional[str] = None):
         """
         Update `question` state and run `ai_flow`
         """
         try:
-            self.ai_flow.update_node_args('create_prompt', args={'question': question})
+            self.ai_flow.update_node_args(
+                'create_prompt', args={'question': question, 'select': select})
             self.ai_flow.execute()
             return self.ai_flow.get_node_result('run_query')
 
@@ -155,81 +160,31 @@ class AIFlow:
             print('Cohere AI not responding')
 
         except RunQueryFail as e:
-            
+
             falsey_query = e.query
             corrected_query = self.__auto_fix_query(falsey_query)
-
-            correct_query = fix_table_name(falsey_query, alias)
-            schema = ai_flow.get_node_result('get_schema')
-            correct_query = fix_space_contained_table(correct_query, schema)
-
-            print('correct_query', correct_query)
-            ai_flow.g.nodes['get_query_from_suggestion']['result'] = correct_query
-            ai_flow.reset_from_node('get_quelenry_from_suggestion', False)
-            ai_flow.execute()
-            re_run_result = ai_flow.get_node_result('run_query')
-            print(re_run_result)
+            print('corrected query', corrected_query)
+            return self.manual_run_query(corrected_query)
 
 
 if __name__ == "__main__":
     file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
-    # df = get_df(file_path)
-    # schema = get_schema(df)
     alias = 'tbl_1'
-    question_1 = 'Name of the highest HP pokemon that also a Legendary. Display the Name and HP column'
+    question_1 = 'Name of the highest HP pokemon that also a Legendary.'
+    select_1 = 'Name, Attack'
+    question_2 = 'Name of the highest Attack pokemon that also a Grass type.'
+    select_2 = 'Name, Attack'
 
-    ai_flow = ChainExecutor()
-    ai_flow.add_node(get_df, args={"file_path": file_path}) \
-        .add_node(get_schema) \
-        .add_node(create_prompt, args={'alias': alias, 'question': question_1}) \
-        .add_node(get_cohere_suggestion) \
-        .add_node(get_query_from_suggestion)
-    # .add_node(fix_table_name, args={'alias': alias}) \
-    # .add_node(fix_space_contained_table)
+    ai_flow = AIFlow(file_path, alias)
 
-    ai_flow.add_edge_from_node_order()
+    answer1 = ai_flow.answer_question(question_1, select=select_1)
+    print('answer 1', answer1)
 
-    # # Connect `fix_space_contained_table` and `get_schema`
-    # ai_flow.add_edge('get_schema', 'fix_space_contained_table', arg_index=1)
+    
+    answer2 = ai_flow.answer_question(question_2, select=select_2)
+    print('answer 2', answer2)
 
-    ai_flow.add_node(run_query, args={'alias': alias})
+    query_1 = f"""SELECT Name, "Type 1" FROM {alias} WHERE "Type 1" = 'Grass' ORDER BY Attack DESC LIMIT 2"""
 
-    # Establish connection between `run_query` and `get_df`
-    ai_flow.add_edge('get_df', 'run_query', arg_index=0)
-
-    # Establish connection between `run_query` and `get_cohere_suggestion`
-    ai_flow.add_edge('get_query_from_suggestion', 'run_query', arg_index=1)
-
-    try:
-        # Ask the first question
-        ai_flow.execute()
-        first_result = ai_flow.get_node_result('run_query')
-        print('first', first_result)
-
-        # Ask the second question
-        ai_flow.update_node_args('create_prompt', args={
-                                 'question': 'Name of the highest Attack pokemon that also a Grass type. Display the Name and Attack column'})
-        ai_flow.execute()
-        second_result = ai_flow.get_node_result('run_query')
-
-        print('second', second_result)
-
-    except FileNotExisted:
-        print('Error, table collapse')
-
-    except CohereNotResponse:
-        print('Cohere AI not responding')
-
-    except RunQueryFail as e:
-        print('error found')
-        falsey_query = e.query
-        correct_query = fix_table_name(falsey_query, alias)
-        schema = ai_flow.get_node_result('get_schema')
-        correct_query = fix_space_contained_table(correct_query, schema)
-
-        print('correct_query', correct_query)
-        ai_flow.g.nodes['get_query_from_suggestion']['result'] = correct_query
-        ai_flow.reset_from_node('get_query_from_suggestion', False)
-        ai_flow.execute()
-        re_run_result = ai_flow.get_node_result('run_query')
-        print(re_run_result)
+    answer3 = ai_flow.manual_run_query(query_1)
+    print(answer3)
