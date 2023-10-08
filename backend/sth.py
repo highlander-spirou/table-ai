@@ -49,6 +49,7 @@ def get_query_from_suggestion(suggestion):
     if 'sql' in sql_query:
         sql_query = sql_query.split('\n')[1]
 
+    print('AI suggestion', sql_query)
     return sql_query
 
 
@@ -73,7 +74,6 @@ def fix_table_name(s, alias):
 
 
 def fix_space_contained_table(q, schema):
-    print('table fix query', q)
     column_names = [i[0] for i in schema if " " in i[0]]
     q2 = q
     for i in column_names:
@@ -129,7 +129,7 @@ class AIFlow:
 
         self.fix_flow.add_edge_from_node_order()
 
-    def __auto_fix_query(self, falsey_query):
+    def auto_fix_query(self, falsey_query):
         print(f'Error found on query:\n{falsey_query}')
         if len(self.fix_flow.g.nodes) == 0:
             self.__construct_error_flow()
@@ -138,6 +138,7 @@ class AIFlow:
             'fix_table_name', args={'s': falsey_query})
         self.fix_flow.execute()
         return self.fix_flow.get_node_result('fix_space_contained_table')
+
 
     def manual_run_query(self, query):
         df = self.ai_flow.get_node_result('get_df')
@@ -160,31 +161,32 @@ class AIFlow:
             print('Cohere AI not responding')
 
         except RunQueryFail as e:
-
-            falsey_query = e.query
-            corrected_query = self.__auto_fix_query(falsey_query)
-            print('corrected query', corrected_query)
-            return self.manual_run_query(corrected_query)
+            return e.query
+            # falsey_query = e.query
+            # corrected_query = self.__auto_fix_query(falsey_query)
+            # print('corrected query', corrected_query)
+            # return self.manual_run_query(corrected_query)
 
 
 if __name__ == "__main__":
     file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
     alias = 'tbl_1'
-    question_1 = 'Name of the highest HP pokemon that also a Legendary.'
-    select_1 = 'Name, Attack'
-    question_2 = 'Name of the highest Attack pokemon that also a Grass type.'
-    select_2 = 'Name, Attack'
-
     ai_flow = AIFlow(file_path, alias)
+
+
+
+    question_1 = 'Name of a Legendary pokemon that has highest HP.'
+    select_1 = 'Name, Attack'
 
     answer1 = ai_flow.answer_question(question_1, select=select_1)
     print('answer 1', answer1)
 
-    
+
+    print('\n======================\n\n')
+
+    question_2 = 'Name of the highest Attack pokemon that also a "Grass" type.'
+    select_2 = 'Name, Attack'
+
     answer2 = ai_flow.answer_question(question_2, select=select_2)
     print('answer 2', answer2)
-
-    query_1 = f"""SELECT Name, "Type 1" FROM {alias} WHERE "Type 1" = 'Grass' ORDER BY Attack DESC LIMIT 2"""
-
-    answer3 = ai_flow.manual_run_query(query_1)
-    print(answer3)
+    

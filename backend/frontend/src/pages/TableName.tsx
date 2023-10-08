@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useParams } from "react-router-dom"
 import { useState, useEffect } from "react"
 import QueryField from "../components/QueryField"
@@ -48,6 +49,7 @@ const TableName = () => {
                 })
             changeShouldDispatch(false)
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [shouldDispatch])
 
     if (error) {

@@ -1,13 +1,18 @@
 from sth import *
 
-file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
+file_path = 'uploads/a5a12c22-4252-4834-8e1c-5c0605180a73/pokemon.parquet.gzip'
 alias = 'tbl_1'
 
 
 df = get_df(file_path)
-schema = get_schema(df)
-question_1 = 'Name of the highest HP pokemon that also a Legendary.'
 
-prompt = create_prompt(schema, alias, question_1, "Name, Attack, Type 1")
+# query = """SELECT Name, Attack FROM tbl_1 WHERE "Type 1" iLIKE 'grass' ORDER BY Attack DESC LIMIT 1"""
+# query = """SELECT Name, Attack FROM tbl_1 WHERE HP = (SELECT MAX(HP) FROM tbl_1) AND Legendary = true"""
+query = """
+SELECT Name, HP FROM tbl_1 WHERE HP = (SELECT MAX(HP) FROM tbl_1 WHERE "Type 1" = 'Grass');
+"""
 
-print(prompt)
+result = run_query(df, query, alias)
+
+print(result)
+

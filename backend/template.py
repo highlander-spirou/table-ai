@@ -6,8 +6,7 @@ template = """Table "{{ table_alias }}" has following schema:
 
 Write a SQL query to answer the question:
 {{ question }}
-
 {% if column_to_query != None %}
-Column to select: {{ select }}
+Select the following columns: {{ select }}
 {% endif %}
 """

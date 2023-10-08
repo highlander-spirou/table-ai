@@ -16,7 +16,8 @@ const QueryField = ({ currentTable }) => {
                     table_name: currentTable
                 })
             })
-        console.log(response)
+            const result = await response.json()
+            console.log(result)
     }
 
     return (

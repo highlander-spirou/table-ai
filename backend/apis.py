@@ -3,14 +3,13 @@ from fastapi.responses import JSONResponse
 from dependencies import LoginOptional, LoginRequired, Pagination, PaginationInterface
 from typing import Annotated
 from db import Client
-from services import upload, folder, tables
+from services import upload, folder, tables, session
 from errors import *
 from pydantic import BaseModel
-from time import sleep
-
+from typing import Optional
 
 api_routes = APIRouter(prefix='/api')
-
+db = session.DB()
 
 @api_routes.get('/')
 async def index(client: Annotated[Client, Depends(LoginOptional)]):
@@ -50,22 +49,40 @@ async def create_upload_files(files: list[UploadFile], client: Annotated[Client,
 
 
 @api_routes.get('/table/{tbl_name}')
-def index(tbl_name: str, pagination: Annotated[PaginationInterface, Depends(Pagination)]):
-    file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
+def index(tbl_name: str, 
+          client: Annotated[Client, Depends(LoginRequired)],
+          pagination: Annotated[PaginationInterface, Depends(Pagination)]):
+    
+    file_path = f'uploads/{client.server_cookie}/{tbl_name}.parquet.gzip'
     table = tables.show_table(
         file_path, page=pagination['page'], limit=pagination['limit'])
-
     return table
 
 
 class AskQuestionInterface(BaseModel):
     question: str
     table_name: str
+    select: Optional[str] = None
 
 
 @api_routes.post('/ask-question')
-def ask_question(req: AskQuestionInterface):
-    file_path = 'uploads/22442226-f8b5-4328-a4e0-cf6b197a0136/pokemon.parquet.gzip'
-    results = tables.AITask(file_path, req.question)()
-    # except 
-    return ""
+def ask_question(req: AskQuestionInterface, client: Annotated[Client, Depends(LoginRequired)]):
+    try:
+        file_path = f'uploads/{client.server_cookie}/pokemon.parquet.gzip'
+        ai_flow = db.get_session(client.client_cookie, req.table_name)
+
+        if ai_flow is None:
+            alias = 'tbl_1'
+            ai_flow = tables.AIFlow(file_path, alias)
+            db.add_obj(client.client_cookie, req.table_name, ai_flow)
+
+        answer = ai_flow.answer_question(req.question, select=req.select)
+        return answer
+    except FileNotExisted:
+        raise HTTPException(400, 'Table collapse, please delete the table and reupload')
+
+    except CohereNotResponse:
+        raise HTTPException(400, 'Cohere AI not responding')
+
+    except RunQueryFail as e:
+        raise HTTPException(400, {'msg': 'Error executing query', 'query': e.query})
