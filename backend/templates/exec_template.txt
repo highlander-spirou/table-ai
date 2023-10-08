@@ -1,2 +1,0 @@
-{{ alias }} = duckdb.read_parquet('{{ file_name }}')
-query_result = {{ alias }}.execute("""{{ statement }}""")

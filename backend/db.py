@@ -1,12 +1,9 @@
-from typing import Optional
-from sqlalchemy import String, DateTime, BigInteger
+from sqlalchemy import String, DateTime
 from sqlalchemy.orm import DeclarativeBase, Session, Mapped, mapped_column
-from sqlalchemy.sql import func
-from sqlalchemy import create_engine, select, update
+from sqlalchemy import create_engine, select
 from datetime import datetime
 from errors import *
 from uuid import uuid4
-from time import sleep
 engine = create_engine("sqlite:///sessions.db")
 
 
@@ -25,7 +22,6 @@ class Client(Base):
         DateTime, default=datetime.now())
     lastest_checkin: Mapped[DateTime] = mapped_column(
         DateTime, default=datetime.now())
-    total_consume: Mapped[int] = mapped_column(BigInteger, default=0)
 
 
 CLIENT_AGE_HOUR = 8

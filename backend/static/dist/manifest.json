@@ -1,0 +1,26 @@
+{
+  "index.css": {
+    "file": "assets/index-e787a265.css",
+    "src": "index.css"
+  },
+  "index.html": {
+    "assets": [
+      "assets/csv-097ca35c.png",
+      "assets/xlsx-7aa7ca3a.png"
+    ],
+    "css": [
+      "assets/index-e787a265.css"
+    ],
+    "file": "assets/index-96becca7.js",
+    "isEntry": true,
+    "src": "index.html"
+  },
+  "src/assets/csv.png": {
+    "file": "assets/csv-097ca35c.png",
+    "src": "src/assets/csv.png"
+  },
+  "src/assets/xlsx.png": {
+    "file": "assets/xlsx-7aa7ca3a.png",
+    "src": "src/assets/xlsx.png"
+  }
+}

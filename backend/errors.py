@@ -37,3 +37,13 @@ class ParquetConversionError(UserWarning):
 
 class FileNotExisted(UserWarning):
     pass
+
+
+class CohereNotResponse(UserWarning):
+    pass
+
+
+class RunQueryFail(UserWarning):
+    def __init__(self, query, *args: object) -> None:
+        self.query = query
+        super().__init__(*args)

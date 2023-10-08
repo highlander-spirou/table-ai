@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-pandas = "^2.1.0"
+pandas = "2.0.3"
 duckdb = "^0.8.1"
 openpyxl = "^3.1.2"
 fastparquet = "^2023.8.0"
@@ -16,6 +16,7 @@ python-multipart = "^0.0.6"
 cohere = "^4.27"
 uuid = "^1.30"
 sqlalchemy = "^2.0.21"
+chainexecutor = {git = "https://github.com/highlander-spirou/chain_execute.git", rev = "v0.4.1"}
 
 
 [build-system]
